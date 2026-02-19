@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/rivic-q/rivicq-protocol/blob/main/crosschain-hub/LICENSE">
+  <a href="https://github.com/rivic-q/rivicq-protocol/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License"/>
   </a>
   <img src="https://img.shields.io/badge/Version-2.0.0-blue.svg" alt="Version"/>
@@ -108,7 +108,7 @@ const result = await confidential.createConfidentialTransfer(
 git clone https://github.com/rivic-q/rivicq-protocol.git
 
 # Navigate to project
-cd rivicq-protocol/crosschain-hub
+cd rivicq-protocol
 
 # Install dependencies
 cd ui && npm install

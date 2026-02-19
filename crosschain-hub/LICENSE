@@ -1,5 +1,9 @@
 # RivicQ Privacy Protocol License
 
+## Version 2.0 | Effective Date: January 1, 2024
+
+---
+
 ## Open Source License (MIT)
 
 The RivicQ Open Source components are licensed under the **MIT License**:
@@ -7,7 +11,7 @@ The RivicQ Open Source components are licensed under the **MIT License**:
 ```
 MIT License
 
-Copyright (c) 2024 RivicQ Inc.
+Copyright (c) 2024-2026 RivicQ Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +32,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
+---
+
 ## Enterprise License (Proprietary)
 
 The RivicQ Enterprise components are proprietary and confidential. All rights reserved.
@@ -36,7 +42,7 @@ The RivicQ Enterprise components are proprietary and confidential. All rights re
 - Multi-Signature Vaults
 - Timelock Vaults  
 - Rate Limiting
-- Access Control
+- Access Control (RBAC)
 - Audit Logging
 - Key Rotation
 - Hardware Wallet Support
@@ -46,22 +52,158 @@ The RivicQ Enterprise components are proprietary and confidential. All rights re
 - MEV Protection
 - Cross-Chain Verification
 - Compliance Manager
+- BaFin Compliant Vaults
+- GDPR-Ready Identity Module
 
 **Contact:** enterprise@rivicq.com
 
-## Trademarks
+---
 
-"RivicQ" and the RivicQ logo are trademarks of RivicQ Inc.
+## Legal Notices
 
-All other trademarks, service marks, and trade names are the property of their respective owners.
+### German Law (Deutsches Recht)
 
-## Patents
+This software is developed and operated in compliance with applicable German laws:
 
-RivicQ Inc. owns and maintains intellectual property rights, including patents, 
-for the technologies disclosed in this repository. 
+- **Bürgerliches Gesetzbuch (BGB)** - German Civil Code
+- **Handelsgesetzbuch (HGB)** - German Commercial Code
+- **Gesetz über den Datenschutz (BDSG)** - Federal Data Protection Act
+- **Datenschutz-Grundverordnung (DSGVO)** - GDPR
+- **BaFin Requirements** - German Federal Financial Supervisory Authority
+- **GoBD** - Principles for proper accounting and record-keeping
+- **Produkthaftungsgesetz (ProdHaftG)** - Product Liability Act
 
-For patent licensing inquiries, contact: ip@rivicq.com
+### EU Law Compliance
+
+- **Regulation (EU) 2016/679 (GDPR)** - General Data Protection Regulation
+- **Regulation (EU) 2023/1114 (MiCA)** - Markets in Crypto-Assets
+- **Directive (EU) 2018/843 (AMLD5)** - Anti-Money Laundering
+- **Directive 2000/31/EC** - Electronic Commerce Directive
+- **Regulation (EU) 2022/2065 (DSA)** - Digital Services Act
+
+### International Laws
+
+- **United States**: Bank Secrecy Act (BSA), FinCEN regulations, CCPA
+- **United Kingdom**: UK GDPR, FCA Handbook
+- **Singapore**: Personal Data Protection Act (PDPA), MAS Guidelines
+- **Japan**: Act on Protection of Personal Information (APPI)
 
 ---
 
-© 2024 RivicQ Inc. All rights reserved.
+## Trademarks
+
+**RivicQ®** and the RivicQ logo are trademarks of **RivicQ Inc.**
+
+The following are trademarks of RivicQ Inc.:
+- RivicQ
+- RivicQ Privacy Protocol
+- RivicQ Shielded Pool
+- RivicQ Vault
+- RivicQ Confidential Transfers
+
+All other trademarks, service marks, and trade names referenced in this documentation are the property of their respective owners.
+
+---
+
+## Patents and Intellectual Property
+
+RivicQ Inc. owns and maintains intellectual property rights, including patents and patent applications, for the technologies disclosed in this repository.
+
+**Patent Portfolio includes:**
+- Zero-knowledge proof verification systems
+- Confidential transaction protocols
+- Multi-party computation for privacy
+- Cross-chain privacy bridge mechanisms
+
+**Patent Licensing Inquiries:** ip@rivicq.com
+
+**Trade Secret Protection:** All proprietary algorithms, implementations, and methodologies not explicitly released as open source are trade secrets of RivicQ Inc.
+
+---
+
+## Data Protection (Datenschutz)
+
+### Privacy by Design
+
+RivicQ implements privacy-by-design and privacy-by-default principles:
+
+- **Data Minimization**: Only essential data is collected
+- **Purpose Limitation**: Data used only for stated purposes
+- **Storage Limitation**: Data retention periods enforced
+- **Integrity and Confidentiality**: Encryption at rest and in transit
+
+### GDPR Rights
+
+Under GDPR, users have the following rights:
+- Right to access (Art. 15 GDPR)
+- Right to rectification (Art. 16 GDPR)
+- Right to erasure ("right to be forgotten") (Art. 17 GDPR)
+- Right to restriction of processing (Art. 18 GDPR)
+- Right to data portability (Art. 20 GDPR)
+- Right to object (Art. 21 GDPR)
+
+**Data Protection Officer:** dpo@rivicq.com
+
+---
+
+## Liability Disclaimer
+
+### Open Source Components
+
+THE OPEN SOURCE COMPONENTS ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+### Enterprise Components
+
+ENTERPRISE COMPONENTS ARE PROVIDED UNDER SEPARATE COMMERCIAL LICENSE AGREEMENT. PLEASE CONTACT enterprise@rivicq.com FOR LICENSING TERMS AND CONDITIONS.
+
+---
+
+## Jurisdiction and Governing Law
+
+### German Jurisdiction
+
+This license and any disputes arising therefrom shall be governed by the laws of the Federal Republic of Germany, excluding conflict of law provisions.
+
+**Place of Jurisdiction:** Munich, Germany (Gerichtsstand München)
+
+### EU Consumer Rights
+
+For consumers within the EU, mandatory provisions of the law of the country where the consumer resides shall apply, including but not limited to consumer protection laws.
+
+### International Arbitration
+
+For international disputes, arbitration under the rules of the International Chamber of Commerce (ICC) may be elected by either party.
+
+---
+
+## Export Control
+
+This software may be subject to export control regulations including but not limited to:
+- **US Export Administration Regulations (EAR)**
+- **EU Dual-Use Regulation**
+- **German Foreign Trade Regulations (AWV)**
+
+---
+
+## Contact Information
+
+| Department | Email |
+|------------|-------|
+| General Inquiries | hello@rivicq.com |
+| Enterprise Sales | enterprise@rivicq.com |
+| Security Issues | security@rivicq.com |
+| Legal Matters | legal@rivicq.com |
+| Patents & IP | ip@rivicq.com |
+| Data Protection | dpo@rivicq.com |
+| Press & Media | press@rivicq.com |
+
+---
+
+**RivicQ Inc.**  
+Munich, Germany  
+
+© 2024-2026 RivicQ Inc. All rights reserved.
+
+**RivicQ®** - Privacy for the Open Economy

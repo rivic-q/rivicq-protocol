@@ -53,8 +53,6 @@
 | **Social Recovery** | Guardian-based account recovery |
 | **MEV Protection** | Flashbots integration for front-run protection |
 | **Cross-Chain** | Multi-chain proof verification |
-| **BaFin Compliance** | German regulatory compliance module |
-| **GDPR Ready** | EU data protection compliance |
 
 ---
 
@@ -93,14 +91,6 @@ const result = await confidential.createConfidentialTransfer(
 
 ---
 
-## Documentation
-
-- [Architecture](ARCHITECTURE.md)
-- [API Reference](docs/API.md)
-- [Security](docs/SECURITY.md)
-
----
-
 ## Getting Started
 
 ```bash
@@ -119,11 +109,19 @@ npm run build
 
 ---
 
+## Documentation
+
+- [Architecture](crosschain-hub/ui/src/lib/ARCHITECTURE.md)
+- [API Reference](docs/API.md)
+- [Security](docs/SECURITY.md)
+
+---
+
 ## License
 
 | Component | License |
 |-----------|---------|
-| Open Source | [MIT](../LICENSE) |
+| Open Source | [MIT](crosschain-hub/LICENSE) |
 | Enterprise | Proprietary |
 
 **Contact:** enterprise@rivicq.com

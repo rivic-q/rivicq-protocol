@@ -8,183 +8,387 @@
   <a href="https://opensource.org/licenses/MIT">
     <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License"/>
   </a>
-  <a href="https://www.npmjs.com/package/rivicq">
-    <img src="https://img.shields.io/npm/v/rivicq.svg" alt="NPM Version"/>
-  </a>
   <a href="https://discord.gg/rivicq">
     <img src="https://img.shields.io/discord/1234567890" alt="Discord"/>
   </a>
+  <a href="https://docs.rivicq.com">
+    <img src="https://img.shields.io/badge/docs-available-blue.svg" alt="Documentation"/>
+  </a>
 </p>
+
+---
 
 ## What is RivicQ?
 
-RivicQ is a comprehensive privacy protocol for Web3 that enables confidential transactions, identity preservation, and regulatory compliance using zero-knowledge proofs.
+**RivicQ** is a comprehensive privacy protocol for Web3 that enables confidential blockchain transactions using zero-knowledge proofs (ZK-SNARKs) while maintaining regulatory compliance.
+
+Think of it as **Zcash meets Visa for the modern web** - enabling private transactions with enterprise-grade security features.
+
+---
+
+## Quick Demo
+
+### 1. Install Dependencies
+
+```bash
+# Clone the repository
+git clone https://github.com/RivicQ/rivicq.git
+cd rivicq
+
+# Install Node.js dependencies (for UI/SDK)
+cd ui && npm install
+
+# Install Rust dependencies (for core protocol)
+cd .. && cargo build
+```
+
+### 2. Quick Start - Create a Privacy Wallet
+
+```typescript
+// ui/src/lib/rivicq-oss.ts
+import { createRivicQWallet, RivicQWallet } from './rivicq-oss';
+
+async function main() {
+  // Create a new privacy wallet
+  const wallet: RivicQWallet = createRivicQWallet();
+  const address = await wallet.initialize();
+  
+  console.log('Your privacy address:', address);
+  // Output: 0x1234... (a privacy-enhanced address)
+}
+
+main();
+```
+
+### 3. Create a Confidential Transfer
+
+```typescript
+import { createRivicQWallet, createRivicQConfidential } from './rivicq-oss';
+
+async function confidentialTransfer() {
+  const wallet = createRivicQWallet();
+  await wallet.initialize();
+  
+  const confidential = createRivicQConfidential();
+  
+  // Create a confidential transfer (amounts & recipient hidden)
+  const result = await confidential.createConfidentialTransfer(
+    wallet.privateKey,  // sender's private key
+    1000000n,           // amount (hidden)
+    recipientAddress,   // recipient (hidden) 
+    senderBalance        // sender balance (verified privately)
+  );
+  
+  console.log('Transfer proof:', result.proof);
+  console.log('Commitment:', result.commitment);
+  console.log('Nullifier:', result.nullifier);
+}
+```
+
+### 4. Generate a Privacy Proof
+
+```typescript
+import { RivicQCore, MiMC7, MerkleTree } from './rivicq-oss';
+
+async function generateProof() {
+  // Initialize the core protocol
+  const rivicq = new RivicQCore(1); // Chain ID 1 (Ethereum)
+  
+  // Generate a zero-knowledge transfer proof
+  const proof = await rivicq.generateTransferProof({
+    amount: 1000000n,
+    recipient: 0xABC...DEFn,
+    salt: 123456789n,
+    secret: secretKey,
+    senderSecret: senderKey
+  }, 5000000n);
+  
+  console.log('ZK Proof generated:', proof.pi_a.length > 0);
+}
+```
+
+### 5. Enterprise - Multi-Sig Vault
+
+```typescript
+// For Enterprise features, contact enterprise@rivicq.com
+import { createRivicQEnterprise } from './rivicq-enterprise';
+
+async function multiSigExample() {
+  const enterprise = await createRivicQEnterprise({
+    licenseKey: 'YOUR-LICENSE-KEY',
+    organizationId: 'YOUR-ORG-ID',
+    tier: 'professional'
+  });
+  
+  // Create a 2-of-3 multi-sig vault
+  const vault = enterprise.multiSig;
+  
+  // Create transaction
+  const txHash = await vault.createTransaction('tx1', data);
+  
+  // Collect signatures
+  await vault.addSignature(txHash, signer1, signature1);
+  await vault.addSignature(txHash, signer2, signature2);
+  
+  // Execute when threshold met
+  await vault.executeTransaction(txHash, executor, executeFn);
+}
+```
+
+---
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                              RivicQ API                                  │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                         │
-│  ┌─────────────────────┐         ┌─────────────────────┐              │
-│  │   RivicQ Open       │         │   RivicQ            │              │
-│  │   Source (MIT)      │         │   Enterprise        │              │
-│  ├─────────────────────┤         ├─────────────────────┤              │
-│  │ • ZK Proofs         │         │ • MultiSig Vault    │              │
-│  │ • Merkle Tree       │         │ • Timelock Vault    │              │
-│  │ • Confidential TX   │         │ • Rate Limiting      │              │
-│  │ • Identity Proofs   │         │ • Access Control    │              │
-│  │ • Range Proofs      │         │ • Audit Logging     │              │
-│  │ • ECIES Encryption  │         │ • Key Rotation      │              │
-│  │ • Poseidon/MiMC    │         │ • HW Wallet         │              │
-│  │                     │         │ • Shielded Pool     │              │
-│  │                     │         │ • Circuit Breaker   │              │
-│  │                     │         │ • Batch TX          │              │
-│  │                     │         │ • Social Recovery   │              │
-│  │                     │         │ • MEV Protection    │              │
-│  │                     │         │ • Cross-Chain       │              │
-│  │                     │         │ • Compliance        │              │
-│  └─────────────────────┘         └─────────────────────┘              │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                         RIVICQ STACK                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │                     CLIENT LAYER                            │ │
+│  │  Web App │ Mobile │ API SDK │ CLI │ Wallet Extension       │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+│                              │                                    │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │                    CORE PROTOCOL                            │ │
+│  │                                                              │ │
+│  │  ┌──────────────────┐    ┌──────────────────────┐        │ │
+│  │  │   ZK Engine     │    │  Confidential Pool   │        │ │
+│  │  │  • MiMC7       │    │  • Merkle Tree       │        │ │
+│  │  │  • Poseidon    │    │  • Deposits/Withdraws │        │ │
+│  │  │  • Groth16     │    │  • Nullifiers        │        │ │
+│  │  └──────────────────┘    └──────────────────────┘        │ │
+│  │                                                              │ │
+│  │  ┌──────────────────┐    ┌──────────────────────┐        │ │
+│  │  │   Identity      │    │  Encryption          │        │ │
+│  │  │  • Anonymous    │    │  • ECIES             │        │ │
+│  │  │    Auth         │    │  • Key Derivation    │        │ │
+│  │  │  • Credentials  │    │  • State Encryption │        │ │
+│  │  └──────────────────┘    └──────────────────────┘        │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+│                              │                                    │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │                   BLOCKCHAIN LAYER                          │ │
+│  │  Ethereum │ Solana │ BSC │ Polygon │ Arbitrum │ Avalanche │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-## Installation
+---
 
-```bash
-# Open Source (MIT License)
-npm install @rivicq/oss
+## Features
 
-# Enterprise (Commercial License)
-npm install @rivicq/enterprise
-```
+### Open Source (MIT License)
 
-## Quick Start
+| Feature | Description |
+|---------|-------------|
+| **ZK Proofs** | Zero-knowledge proofs using MiMC7 & Poseidon hash functions |
+| **Merkle Tree** | Binary tree for commitment verification (2^20 leaves) |
+| **Confidential Transfers** | Hide sender, recipient, and amount |
+| **Identity Proofs** | Anonymous authentication without revealing identity |
+| **Range Proofs** | Prove value is within a range without revealing exact amount |
+| **ECIES Encryption** | Industry-standard encrypted communications |
 
-### Open Source
+### Enterprise (Proprietary License)
 
-```typescript
-import { createRivicQWallet, createRivicQConfidential } from '@rivicq/oss';
+| Feature | Description |
+|---------|-------------|
+| **Multi-Sig Vaults** | M-of-N signature requirements for team funds |
+| **Timelock Vaults** | Scheduled releases with configurable delays |
+| **Rate Limiting** | TPS and volume controls per user/address |
+| **Access Control** | Role-based permissions (RBAC) |
+| **Audit Logging** | Immutable logs for compliance & forensics |
+| **Key Rotation** | Automatic key rotation with guardian approval |
+| **Hardware Wallet** | Ledger & Trezor integration |
+| **Shielded Pool** | Enhanced privacy with larger anonymity set |
+| **Circuit Breaker** | Emergency pause for critical operations |
+| **Social Recovery** | Guardian-based account recovery |
+| **MEV Protection** | Flashbots integration for front-run protection |
+| **Cross-Chain** | Multi-chain proof verification |
 
-const wallet = createRivicQWallet();
-await wallet.initialize();
+---
 
-const proof = await wallet.createTransferProof(
-  1000000n,    // amount
-  recipient,   // recipient
-  balance      // sender balance
-);
-```
+## Supported Chains
 
-### Enterprise
+| Chain | Status | Notes |
+|-------|--------|-------|
+| Ethereum | ✅ Mainnet | Full support |
+| Solana | ✅ Mainnet | Full support |
+| BSC | ✅ Mainnet | Full support |
+| Polygon | ✅ Mainnet | Full support |
+| Arbitrum | ✅ Mainnet | Full support |
+| Optimism | ✅ Mainnet | Full support |
+| Avalanche | ✅ Mainnet | Full support |
+| Base | ✅ Mainnet | Full support |
 
-```typescript
-import { createRivicQEnterprise } from '@rivicq/enterprise';
-
-const enterprise = createRivicQEnterprise({
-  licenseKey: 'your-license-key',
-  organizationId: 'org-123',
-  tier: 'professional',
-  features: RIVICQ_ENTERPRISE_FEATURES,
-  supportLevel: 'slack'
-});
-
-await enterprise.initializeDefaults(adminAddress);
-
-// Multi-sig transaction
-const txHash = await enterprise.multiSig.createTransaction('tx1', data);
-await enterprise.multiSig.addSignature(txHash, signer1, sig1);
-await enterprise.multiSig.executeTransaction(txHash, executor, executeFn);
-
-// Rate limiting
-const { allowed } = await enterprise.rateLimiter.checkLimit(user, amount);
-await enterprise.rateLimiter.recordTransaction(user, amount);
-
-// Compliance reporting
-const report = await enterprise.complianceManager.generateRegulatoryReport(
-  Date.now() - 30 * 24 * 60 * 60 * 1000,
-  Date.now()
-);
-```
-
-## Product Tiers
-
-| Feature | Open Source | Starter | Professional | Institutional |
-| **ZK Proofs** | ✅ | ✅ | ✅ | ✅ |
-| **Merkle Tree** | ✅ | ✅ | ✅ | ✅ |
-| **Confidential TX** | ✅ | ✅ | ✅ | ✅ |
-| **MultiSig Vault** | ❌ | ✅ | ✅ | ✅ |
-| **Timelock Vault** | ❌ | ❌ | ✅ | ✅ |
-| **Rate Limiting** | ❌ | ✅ | ✅ | ✅ |
-| **Access Control** | ❌ | ✅ | ✅ | ✅ |
-| **Audit Logging** | ❌ | ✅ | ✅ | ✅ |
-| **Key Rotation** | ❌ | ❌ | ✅ | ✅ |
-| **Hardware Wallet** | ❌ | ❌ | ✅ | ✅ |
-| **Shielded Pool** | ❌ | ❌ | ✅ | ✅ |
-| **Circuit Breaker** | ❌ | ❌ | ✅ | ✅ |
-| **Batch Transactions** | ❌ | ❌ | ✅ | ✅ |
-| **Social Recovery** | ❌ | ❌ | ❌ | ✅ |
-| **MEV Protection** | ❌ | ❌ | ✅ | ✅ |
-| **Cross-Chain** | ❌ | ❌ | ❌ | ✅ |
-| **White-Label** | ❌ | ❌ | ❌ | ✅ |
-| **Dedicated Support** | ❌ | ❌ | ❌ | ✅ |
-| **SLA** | ❌ | ❌ | ❌ | ✅ |
-
-## Use Cases
-
-### Open Source
-- DeFi privacy pools
-- NFT confidential transfers
-- Gaming in-game currency
-- DAO voting privacy
-
-### Enterprise
-- Institutional custody
-- Regulated DeFi protocols
-- Payment processors
-- Compliance-heavy industries
-- Cross-chain bridges
+---
 
 ## Security
 
 ### Audits
-- [ ] OpenZeppelin (Scheduled)
-- [ ] Trail of Bits (Scheduled)
-- [ ] Certik (Scheduled)
+
+| Auditor | Status | Date |
+|---------|--------|------|
+| OpenZeppelin | Scheduled | Q2 2024 |
+| Trail of Bits | Scheduled | Q2 2024 |
+| Certik | Scheduled | Q3 2024 |
 
 ### Bug Bounty
-We run a bug bounty program. Contact security@rivicq.com
 
-## Documentation
+We run a bug bounty program. Contact: security@rivicq.com
 
-- [Official Docs](https://docs.rivicq.com)
-- [API Reference](https://docs.rivicq.com/api)
-- [Examples](https://github.com/rivicq/examples)
-- [Circom Circuits](https://github.com/rivicq/circuits)
+---
 
-## Enterprise Contact
+## Getting Started
 
-For commercial licenses and custom integrations:
+### For Developers
 
-📧 enterprise@rivicq.com  
-💬 [Discord](https://discord.gg/rivicq)  
-🏢 [Website](https://rivicq.com)
+```bash
+# 1. Clone the repository
+git clone https://github.com/RivicQ/rivicq.git
+
+# 2. Install dependencies
+cd ui && npm install
+
+# 3. Run the demo
+npm run demo
+
+# 4. Build
+npm run build
+
+# 5. Read the docs
+# See /docs directory
+```
+
+### For Enterprises
+
+Contact us for a personalized demo and licensing:
+
+- 📧 enterprise@rivicq.com
+- 💬 [Discord](https://discord.gg/rivicq)
+- 🌐 [rivicq.com](https://rivicq.com)
+
+---
 
 ## License
 
+### Open Source Components
+
+The core privacy protocol and SDK are available under the **MIT License**:
+
 ```
-Open Source: MIT License
-Enterprise:   Proprietary - Commercial Use Only
+MIT License
+
+Copyright (c) 2024 RivicQ Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 ```
 
-Copyright © 2024 RivicQ Inc. All rights reserved.
+### Enterprise Components
 
-## Support
+Enterprise features are proprietary and require a commercial license. Contact enterprise@rivicq.com for licensing terms.
 
-| Tier | Support Channel | Response Time |
-|------|----------------|---------------|
-| Open Source | GitHub Issues | Best Effort |
-| Starter | Email | 24 hours |
-| Professional | Slack | 4 hours |
-| Institutional | Dedicated | 1 hour |
+---
+
+## Project Structure
+
+```
+rivicq/
+├── ui/                          # Frontend & SDK
+│   ├── src/
+│   │   └── lib/
+│   │       ├── rivicq-oss.ts        # Open Source (MIT)
+│   │       ├── rivicq-enterprise.ts # Enterprise (Proprietary)
+│   │       ├── rivicq.ts            # Unified API
+│   │       ├── ARCHITECTURE.md      # Full architecture docs
+│   │       └── PITCH.md             # Pitch deck
+│   └── package.json
+│
+├── src/                         # Rust/Solana Core
+│   ├── lib.rs
+│   ├── bridge.rs
+│   ├── eidas.rs
+│   ├── wallet.rs
+│   └── arcium.rs
+│
+├── evm/                         # EVM Smart Contracts
+│   ├── contracts/
+│   └── test/
+│
+├── offchain/                    # Off-chain Services
+│   └── src/
+│
+└── docs/                       # Documentation
+    └── ...
+```
+
+---
+
+## Contributing
+
+### Open Source Contributions
+
+We welcome contributions from the community! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+1. Fork the repo
+2. Create a feature branch
+3. Make your changes
+4. Submit a PR
+
+### Community
+
+| Platform | Link |
+|----------|------|
+| Discord | [discord.gg/rivicq](https://discord.gg/rivicq) |
+| Twitter | [@RivicQ](https://twitter.com/RivicQ) |
+| GitHub | [github.com/RivicQ](https://github.com/RivicQ) |
+
+---
+
+## FAQ
+
+**Q: How is privacy maintained?**
+A: We use ZK-SNARKs (Zero-Knowledge Succinct Non-Interactive Arguments of Knowledge) - the same technology used by Zcash and Ethereum's upcoming privacy upgrades.
+
+**Q: Can regulators see transactions?**
+A: Enterprise version includes compliance dashboards. Law enforcement can access with proper authorization through legal processes.
+
+**Q: Which chains are supported?**
+A: Ethereum, Solana, BSC, Polygon, Arbitrum, Optimism, Avalanche, and Base.
+
+**Q: Is it audited?**
+A: Audits are scheduled with OpenZeppelin, Trail of Bits, and Certik.
+
+---
+
+## Contact
+
+| Type | Contact |
+|------|---------|
+| General | hello@rivicq.com |
+| Enterprise | enterprise@rivicq.com |
+| Security | security@rivicq.com |
+| Support | support@rivicq.com |
+
+---
+
+<p align="center">
+  <strong>RivicQ</strong> - Privacy for the Open Economy
+</p>

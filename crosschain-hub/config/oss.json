@@ -1,0 +1,22 @@
+{
+  "oss": {
+    "enabled": true,
+    "tier": "oss",
+    "version": "2.0.0"
+  },
+  "features": {
+    "bridge": true,
+    "wallet": true,
+    "eidas": true,
+    "arcium": false
+  },
+  "limits": {
+    "max_wallets": 1000,
+    "max_transfers_per_day": 100,
+    "max_amount": 1000000
+  },
+  "monitoring": {
+    "prometheus": false,
+    "log_level": "info"
+  }
+}

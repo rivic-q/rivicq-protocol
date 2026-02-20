@@ -25,19 +25,12 @@ RUN mkdir -p $CARGO_HOME
 
 WORKDIR /build
 
-# Copy Cargo files
-COPY Cargo.toml Cargo.lock ./
-COPY src ./src
+# Copy Cargo files from crosschain-hub
+COPY crosschain-hub/Cargo.toml crosschain-hub/Cargo.lock ./
+COPY crosschain-hub/src ./src
 
-# Enterprise features enabled via cargo
-RUN echo '[profile.release]' >> Cargo.toml
-RUN echo 'lto = true' >> Cargo.toml  
-RUN echo 'codegen-units = 1' >> Cargo.toml
-RUN echo 'opt-level = 3' >> Cargo.toml
-RUN echo 'strip = true' >> Cargo.toml
-
-# Build with maximum optimizations
-RUN cargo build --release --locked 2>&1 || cargo build --release
+# Build with enterprise features
+RUN cargo build --release --features enterprise 2>&1 || cargo build --release
 
 # Stage 2: Secure Runtime
 FROM debian:bookworm-slim AS runtime
@@ -56,11 +49,11 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /home/appuser
 
 # Copy the compiled program
-COPY --from=builder --chown=appuser:appuser /build/target/release/crosschain_hub.so /app/
+COPY --from=builder --chown=appuser:appuser /build/target/release/libcrosschain_hub.so /app/
 COPY --from=builder --chown=appuser:appuser /build/target/release/crosschain_hub /app/
 
-# Copy configuration
-COPY --chown=appuser:appuser config/enterprise /app/config
+# Copy crosschain-hub source
+COPY --chown=appuser:appuser crosschain-hub /app/
 
 # Set secure permissions
 RUN chmod 500 /app/crosschain_hub \

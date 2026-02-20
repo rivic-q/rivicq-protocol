@@ -1,0 +1,65 @@
+{
+  "enterprise": {
+    "enabled": true,
+    "tier": "enterprise",
+    "version": "2.0.0"
+  },
+  "vault": {
+    "enabled": true,
+    "address": "https://vault.rivicq.com",
+    "role": "crosschain-hub",
+    "auth_method": "kubernetes",
+    "path": "secret/data/crosschain-hub"
+  },
+  "audit": {
+    "enabled": true,
+    "backend": "s3",
+    "bucket": "rivicq-audit-logs",
+    "region": "eu-central-1",
+    "retention_days": 2555,
+    "encryption": "AES256"
+  },
+  "key_rotation": {
+    "enabled": true,
+    "interval_days": 90,
+    "auto_rotate": true,
+    "guardian_approval_required": true
+  },
+  "multi_sig": {
+    "enabled": true,
+    "default_threshold": 2,
+    "max_signers": 5,
+    "timeout_blocks": 100
+  },
+  "rate_limiting": {
+    "enabled": true,
+    "requests_per_minute": 10000,
+    "burst_size": 100,
+    "by_ip": true,
+    "by_wallet": true
+  },
+  "circuit_breaker": {
+    "enabled": true,
+    "threshold": 100,
+    "timeout_blocks": 50,
+    "auto_pause": true
+  },
+  "mev_protection": {
+    "enabled": true,
+    "flashbots_relay": "https://relay.flashbots.net",
+    "private_transactions": true
+  },
+  "compliance": {
+    "eidas_level": "high",
+    "kyc_required": true,
+    "aml_screening": true,
+    "jurisdiction_restrictions": ["DE", "EU", "US"],
+    "reporting_enabled": true
+  },
+  "monitoring": {
+    "prometheus": true,
+    "grafana": true,
+    "alert_webhook": "https://alerts.rivicq.com",
+    "log_level": "debug"
+  }
+}

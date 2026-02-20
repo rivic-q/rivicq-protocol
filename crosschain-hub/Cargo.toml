@@ -1,10 +1,13 @@
 [package]
 name = "crosschain_hub"
-version = "0.1.0"
+version = "2.0.0"
 edition = "2021"
+description = "RivicQ Crosschain Hub - Solana-based cross-chain protocol with eIDAS compliance"
 
 [features]
 default = []
+oss = []
+enterprise = ["dep:ring", "dep:rustls"]
 
 [dependencies]
 solana-sdk = "=2.2.0"
@@ -20,6 +23,10 @@ zeroize = { version = "1.8", features = ["derive"] }
 num-derive = "0.4"
 num-traits = "0.2"
 
+# Enterprise dependencies (optional)
+ring = { version = "0.17", optional = true }
+rustls = { version = "0.22", optional = true }
+
 [lib]
 path = "src/lib.rs"
 crate-type = ["cdylib", "rlib"]
@@ -28,4 +35,12 @@ crate-type = ["cdylib", "rlib"]
 opt-level = 3
 lto = true
 codegen-units = 1
+panic = "abort"
+
+[profile.release.enterprise]
+inherits = "release"
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true
 panic = "abort"

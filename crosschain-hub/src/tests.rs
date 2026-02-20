@@ -165,7 +165,11 @@ mod test_functions {
 
     #[test]
     fn test_validate_arcium_transaction_no_encryption() {
-        let config = ArciumConfig::default();
+        let config = ArciumConfig {
+            encryption_enabled: false,
+            proof_required: false,
+            ..Default::default()
+        };
 
         let tx_data = ArciumTransactionData {
             encrypted_payload: vec![],

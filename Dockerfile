@@ -21,9 +21,9 @@ RUN mkdir -p $CARGO_HOME
 
 WORKDIR /build
 
-# Copy Cargo files
-COPY Cargo.toml Cargo.lock ./
-COPY src ./src
+# Copy Cargo files from crosschain-hub
+COPY crosschain-hub/Cargo.toml crosschain-hub/Cargo.lock ./
+COPY crosschain-hub/src ./src
 
 # Build the program
 RUN cargo build --release --locked 2>&1 || cargo build --release
@@ -48,7 +48,7 @@ COPY --from=builder /build/target/release/crosschain_hub.so /home/appuser/
 COPY --from=builder /build/target/release/crosschain_hub /home/appuser/
 
 # Copy necessary files
-COPY --chown=appuser:appuser . /home/appuser/
+COPY --chown=appuser:appuser crosschain-hub /home/appuser/
 
 # Set permissions
 RUN chmod 755 /home/appuser/crosschain_hub.so \

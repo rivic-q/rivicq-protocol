@@ -1,13 +1,13 @@
 #![cfg(test)]
 
 mod tests {
-    use crate::*;
+    use crate::arcium::*;
+    use crate::bridge::*;
     use crate::eidas::*;
     use crate::wallet::*;
-    use crate::bridge::*;
-    use crate::arcium::*;
-    use solana_program::pubkey::Pubkey;
+    use crate::*;
     use borsh::BorshSerialize;
+    use solana_program::pubkey::Pubkey;
 
     #[test]
     fn test_eidas_level_default() {
@@ -28,7 +28,7 @@ mod tests {
             country: "DE".to_string(),
             qscd: true,
         };
-        
+
         let result = validate_certificate(&cert);
         assert!(result.is_ok());
     }
@@ -46,7 +46,7 @@ mod tests {
             country: "DE".to_string(),
             qscd: true,
         };
-        
+
         let result = validate_certificate(&cert);
         assert!(result.is_err());
     }
@@ -64,7 +64,7 @@ mod tests {
             country: "DE".to_string(),
             qscd: false,
         };
-        
+
         let result = validate_certificate(&cert);
         assert!(result.is_err());
     }
@@ -87,7 +87,7 @@ mod tests {
             "Test details".to_string(),
             "COMPLIANT".to_string(),
         );
-        
+
         assert_eq!(log.action, "TEST_ACTION");
         assert_eq!(log.compliance_status, "COMPLIANT");
         assert!(!log.id.is_empty());
@@ -121,7 +121,7 @@ mod tests {
             emergency_breaker: false,
             supported_tokens: vec![],
         };
-        
+
         assert!(config.relayer_fee > 0);
         assert!(config.protocol_fee > 0);
         assert!(config.min_confirmation_blocks > 0);
@@ -131,7 +131,7 @@ mod tests {
     fn test_cross_chain_fee_calculation() {
         let fee = calculate_cross_chain_fee(1_000_000, 25, 1000);
         assert!(fee > 0);
-        
+
         let fee_no_relayer = calculate_cross_chain_fee(1_000_000, 25, 0);
         assert!(fee_no_relayer > 0);
     }
@@ -149,7 +149,7 @@ mod tests {
         let mut config = ArciumConfig::default();
         config.encryption_enabled = true;
         config.proof_required = true;
-        
+
         let tx_data = ArciumTransactionData {
             encrypted_payload: vec![1, 2, 3, 4],
             ciphertext: vec![],
@@ -158,7 +158,7 @@ mod tests {
             arcium_program_id: Pubkey::default(),
             encryption_public_key: vec![],
         };
-        
+
         let result = validate_arcium_transaction(&tx_data, &config);
         assert!(result.is_ok());
     }
@@ -168,7 +168,7 @@ mod tests {
         let mut config = ArciumConfig::default();
         config.encryption_enabled = false;
         config.proof_required = false;
-        
+
         let tx_data = ArciumTransactionData {
             encrypted_payload: vec![],
             ciphertext: vec![],
@@ -177,7 +177,7 @@ mod tests {
             arcium_program_id: Pubkey::default(),
             encryption_public_key: vec![],
         };
-        
+
         let result = validate_arcium_transaction(&tx_data, &config);
         assert!(result.is_ok());
     }
@@ -195,10 +195,10 @@ mod tests {
             fee_basis_points: 25,
             paused: false,
         };
-        
+
         let serialized = config.try_to_vec().unwrap();
         let deserialized = CrossChainConfig::try_from_slice(&serialized).unwrap();
-        
+
         assert_eq!(config.admin, deserialized.admin);
         assert_eq!(config.supported_chains, deserialized.supported_chains);
         assert_eq!(config.fee_basis_points, deserialized.fee_basis_points);
@@ -220,10 +220,10 @@ mod tests {
             public_key: vec![1, 2, 3, 4, 5],
             metadata: vec![6, 7, 8, 9, 10],
         };
-        
+
         let serialized = wallet_data.try_to_vec().unwrap();
         let deserialized = WalletData::try_from_slice(&serialized).unwrap();
-        
+
         assert_eq!(wallet_data.public_key, deserialized.public_key);
     }
 
@@ -237,10 +237,10 @@ mod tests {
             destination_chain: 10,
             nonce: 1,
         };
-        
+
         let serialized = sig_data.try_to_vec().unwrap();
         let deserialized = TransactionSignatureData::try_from_slice(&serialized).unwrap();
-        
+
         assert_eq!(sig_data.amount, deserialized.amount);
         assert_eq!(sig_data.source_chain, deserialized.source_chain);
     }

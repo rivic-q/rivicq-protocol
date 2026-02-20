@@ -132,7 +132,7 @@ pub fn verify_qualified_signature(
     _data: &[u8],
 ) -> Result<bool, String> {
     validate_certificate(&signature.certificate)?;
-    
+
     if signature.timestamp == 0 {
         return Err("Timestamp required for qualified signature".to_string());
     }

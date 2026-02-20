@@ -11,15 +11,15 @@ use solana_program::{
     sysvar::{clock::Clock, Sysvar},
 };
 
+pub mod arcium;
+pub mod bridge;
 pub mod eidas;
 pub mod wallet;
-pub mod bridge;
-pub mod arcium;
 
+pub use arcium::*;
+pub use bridge::*;
 pub use eidas::*;
 pub use wallet::*;
-pub use bridge::*;
-pub use arcium::*;
 
 #[cfg(test)]
 mod tests;
@@ -78,17 +78,39 @@ impl Default for CrossChainState {
 
 #[derive(BorshSerialize, BorshDeserialize, Debug, Clone)]
 pub enum CrossChainInstruction {
-    Initialize { config: CrossChainConfig },
-    UpdateConfig { config: CrossChainConfig },
-    RegisterWallet { wallet_data: wallet::WalletData },
-    SignTransaction { signature_data: wallet::TransactionSignatureData },
-    VerifyCompliance { compliance_data: eidas::ComplianceData },
-    InitiateCrossChain { transfer_data: bridge::CrossChainTransferData },
-    CompleteCrossChain { transfer_data: bridge::CrossChainTransferData },
-    CreateQualifiedSignature { signature_data: eidas::QualifiedSignatureData },
-    VerifyQualifiedSignature { signature_data: eidas::QualifiedSignatureData },
-    CreateTimeStamp { timestamp_data: eidas::TimestampData },
-    ProcessArciumTransaction { arcium_data: arcium::ArciumTransactionData },
+    Initialize {
+        config: CrossChainConfig,
+    },
+    UpdateConfig {
+        config: CrossChainConfig,
+    },
+    RegisterWallet {
+        wallet_data: wallet::WalletData,
+    },
+    SignTransaction {
+        signature_data: wallet::TransactionSignatureData,
+    },
+    VerifyCompliance {
+        compliance_data: eidas::ComplianceData,
+    },
+    InitiateCrossChain {
+        transfer_data: bridge::CrossChainTransferData,
+    },
+    CompleteCrossChain {
+        transfer_data: bridge::CrossChainTransferData,
+    },
+    CreateQualifiedSignature {
+        signature_data: eidas::QualifiedSignatureData,
+    },
+    VerifyQualifiedSignature {
+        signature_data: eidas::QualifiedSignatureData,
+    },
+    CreateTimeStamp {
+        timestamp_data: eidas::TimestampData,
+    },
+    ProcessArciumTransaction {
+        arcium_data: arcium::ArciumTransactionData,
+    },
 }
 
 pub fn process_instruction(
@@ -97,11 +119,9 @@ pub fn process_instruction(
     data: &[u8],
 ) -> ProgramResult {
     let instruction = CrossChainInstruction::try_from_slice(data)?;
-    
+
     match instruction {
-        CrossChainInstruction::Initialize { config } => {
-            initialize(program_id, accounts, config)
-        }
+        CrossChainInstruction::Initialize { config } => initialize(program_id, accounts, config),
         CrossChainInstruction::UpdateConfig { config } => {
             update_config(program_id, accounts, config)
         }
@@ -155,7 +175,7 @@ fn initialize(
 
     let rent = Rent::get()?;
     let space = state.try_to_vec()?.len();
-    
+
     invoke(
         &system_instruction::create_account(
             admin.key,
@@ -164,15 +184,11 @@ fn initialize(
             space as u64,
             program_id,
         ),
-        &[
-            admin.clone(),
-            state_account.clone(),
-            system_program.clone(),
-        ],
+        &[admin.clone(), state_account.clone(), system_program.clone()],
     )?;
 
     state.serialize(&mut &mut state_account.data.borrow_mut()[..])?;
-    
+
     msg!("Cross-chain hub initialized successfully");
     Ok(())
 }
@@ -191,14 +207,14 @@ fn update_config(
     }
 
     let mut state = CrossChainState::try_from_slice(&state_account.data.borrow())?;
-    
+
     if state.config.admin != *admin.key {
         return Err(ProgramError::Custom(1));
     }
 
     state.config = config;
     state.serialize(&mut &mut state_account.data.borrow_mut()[..])?;
-    
+
     msg!("Config updated successfully");
     Ok(())
 }
@@ -219,7 +235,7 @@ fn register_wallet(
     }
 
     let mut state = CrossChainState::try_from_slice(&state_account.data.borrow())?;
-    
+
     let wallet = Wallet {
         owner: *owner.key,
         created_at: Clock::get()?.unix_timestamp,
@@ -231,7 +247,7 @@ fn register_wallet(
 
     let rent = Rent::get()?;
     let space = wallet.try_to_vec()?.len();
-    
+
     invoke(
         &system_instruction::create_account(
             owner.key,
@@ -248,10 +264,10 @@ fn register_wallet(
     )?;
 
     wallet.serialize(&mut &mut wallet_account.data.borrow_mut()[..])?;
-    
+
     state.registered_wallets += 1;
     state.serialize(&mut &mut state_account.data.borrow_mut()[..])?;
-    
+
     msg!("Wallet registered successfully");
     Ok(())
 }
@@ -270,7 +286,7 @@ fn sign_transaction(
     }
 
     let wallet = Wallet::try_from_slice(&wallet_account.data.borrow())?;
-    
+
     if wallet.owner != *signer.key {
         return Err(ProgramError::IncorrectProgramId);
     }
@@ -279,7 +295,10 @@ fn sign_transaction(
         return Err(ProgramError::Custom(1001)); // Compliance required
     }
 
-    msg!("Transaction signed successfully for: {:?}", signature_data.transaction_hash);
+    msg!(
+        "Transaction signed successfully for: {:?}",
+        signature_data.transaction_hash
+    );
     Ok(())
 }
 
@@ -298,18 +317,18 @@ fn verify_compliance(
     }
 
     let state = CrossChainState::try_from_slice(&state_account.data.borrow())?;
-    
+
     if state.config.eidas_authority != *verifier.key {
         return Err(ProgramError::Custom(1));
     }
 
     let mut wallet = Wallet::try_from_slice(&wallet_account.data.borrow())?;
-    
+
     wallet.is_compliance_verified = compliance_data.verified;
     wallet.eidas_level = compliance_data.eidas_level;
-    
+
     wallet.serialize(&mut &mut wallet_account.data.borrow_mut()[..])?;
-    
+
     msg!("Compliance verified: {:?}", compliance_data.verified);
     Ok(())
 }
@@ -330,13 +349,13 @@ fn initiate_cross_chain(
     }
 
     let state = CrossChainState::try_from_slice(&state_account.data.borrow())?;
-    
+
     if state.config.paused {
         return Err(ProgramError::Custom(1002)); // Program paused
     }
 
     let wallet = Wallet::try_from_slice(&sender_wallet.data.borrow())?;
-    
+
     if wallet.owner != *sender.key {
         return Err(ProgramError::IncorrectProgramId);
     }
@@ -350,14 +369,14 @@ fn initiate_cross_chain(
     }
 
     let fee = (transfer_data.amount as u128 * state.config.fee_basis_points as u128 / 10000) as u64;
-    
+
     msg!(
         "Initiated cross-chain transfer: {} SOL to chain {} with fee {}",
         transfer_data.amount - fee,
         transfer_data.destination_chain,
         fee
     );
-    
+
     Ok(())
 }
 
@@ -376,7 +395,7 @@ fn complete_cross_chain(
     }
 
     let state = CrossChainState::try_from_slice(&state_account.data.borrow())?;
-    
+
     if state.config.bridge_authority != *authority.key {
         return Err(ProgramError::Custom(1));
     }
@@ -386,7 +405,7 @@ fn complete_cross_chain(
         transfer_data.amount,
         recipient_account.key
     );
-    
+
     Ok(())
 }
 
@@ -427,7 +446,7 @@ fn process_arcium_transaction(
     let arcium_program = next_account_info(account_info_iter)?;
 
     let state = CrossChainState::try_from_slice(&state_account.data.borrow())?;
-    
+
     if state.config.arcium_program != *arcium_program.key {
         return Err(ProgramError::IncorrectProgramId);
     }

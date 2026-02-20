@@ -75,10 +75,7 @@ pub fn validate_arcium_transaction(
     Ok(true)
 }
 
-pub fn create_encrypted_payload(
-    plaintext: &[u8],
-    public_key: &[u8],
-) -> Result<Vec<u8>, String> {
+pub fn create_encrypted_payload(plaintext: &[u8], public_key: &[u8]) -> Result<Vec<u8>, String> {
     if plaintext.is_empty() {
         return Err("Plaintext cannot be empty".to_string());
     }
@@ -90,10 +87,7 @@ pub fn create_encrypted_payload(
     Ok(plaintext.to_vec())
 }
 
-pub fn verify_zero_knowledge_proof(
-    proof: &[u8],
-    public_inputs: &[u8],
-) -> Result<bool, String> {
+pub fn verify_zero_knowledge_proof(proof: &[u8], public_inputs: &[u8]) -> Result<bool, String> {
     if proof.is_empty() {
         return Err("Proof cannot be empty".to_string());
     }

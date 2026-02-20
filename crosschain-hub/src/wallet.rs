@@ -1,6 +1,6 @@
+use crate::eidas::{ComplianceData, EidasLevel};
 use borsh::{BorshDeserialize, BorshSerialize};
 use solana_program::pubkey::Pubkey;
-use crate::eidas::{EidasLevel, ComplianceData};
 
 #[derive(BorshSerialize, BorshDeserialize, Debug, Clone)]
 pub struct Wallet {
@@ -99,19 +99,13 @@ pub fn validate_wallet_transfer(
     Ok(true)
 }
 
-pub fn derive_multi_chain_address(
-    master_key: &Pubkey,
-    chain_id: u64,
-    index: u32,
-) -> Pubkey {
+pub fn derive_multi_chain_address(master_key: &Pubkey, chain_id: u64, index: u32) -> Pubkey {
     use solana_sdk::hash::Hash;
     use solana_sdk::pubkey::Pubkey;
-    
+
     let seed = format!("{}{}{}", chain_id, index, master_key);
-    let (address, _) = Pubkey::find_program_address(
-        &[seed.as_bytes()],
-        &solana_sdk::system_program::id(),
-    );
+    let (address, _) =
+        Pubkey::find_program_address(&[seed.as_bytes()], &solana_sdk::system_program::id());
     address
 }
 

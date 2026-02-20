@@ -1,6 +1,6 @@
+use crate::eidas::EidasLevel;
 use borsh::{BorshDeserialize, BorshSerialize};
 use solana_program::pubkey::Pubkey;
-use crate::eidas::EidasLevel;
 
 #[derive(BorshSerialize, BorshDeserialize, Debug, Clone)]
 pub struct CrossChainTransferData {
@@ -77,11 +77,7 @@ pub struct RelayConfirmation {
     pub signers: Vec<Pubkey>,
 }
 
-pub fn calculate_cross_chain_fee(
-    amount: u64,
-    protocol_fee_bps: u16,
-    relayer_fee: u64,
-) -> u64 {
+pub fn calculate_cross_chain_fee(amount: u64, protocol_fee_bps: u16, relayer_fee: u64) -> u64 {
     let protocol_fee = (amount as u128 * protocol_fee_bps as u128 / 10000) as u64;
     protocol_fee + relayer_fee
 }
@@ -108,8 +104,7 @@ pub fn encode_bridge_message(message: &CrossChainMessage) -> Vec<u8> {
 }
 
 pub fn decode_bridge_message(data: &[u8]) -> Result<CrossChainMessage, String> {
-    CrossChainMessage::try_from_slice(data)
-        .map_err(|e| format!("Failed to decode message: {}", e))
+    CrossChainMessage::try_from_slice(data).map_err(|e| format!("Failed to decode message: {}", e))
 }
 
 pub fn verify_relay_confirmation(

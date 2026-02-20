@@ -32,6 +32,54 @@
 
 ---
 
+## Market Problems We Solve
+
+### 🔐 DeFi Problems
+
+| Problem | RivicQ Solution |
+|---------|-----------------|
+| **Transaction Privacy** | ZK proofs hide sender, recipient, and amount |
+| **MEV Extraction** | Flashbots integration prevents front-running |
+| **Cross-chain Complexity** | Unified bridge to 7+ blockchains |
+| **Regulatory Compliance** | eIDAS 2.0 qualified signatures |
+| **Smart Contract Risk** | Multi-sig vaults + circuit breakers |
+| **Oracle Manipulation** | Integrated proof verification |
+| **Identity Fragmentation** | Universal KYC across chains |
+
+### 🏛️ DAO Problems
+
+| Problem | RivicQ Solution |
+|---------|-----------------|
+| **Voting Privacy** | Encrypted votes with ZK verification |
+| **Proposal Sniping** | Timelock + encrypted proposals |
+| **Governance Centralization** | Threshold signatures |
+| **Sybil Attacks** | eIDAS identity verification |
+| **Execution Opacity** | Immutable audit trail |
+| **Whale Exposure** | Shielded balance proofs |
+| **Multi-chain Governance** | Unified cross-chain voting |
+
+---
+
+## Complete Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Blockchain** | Solana 2.2.0 |
+| **Language** | Rust 1.77+ |
+| **SDK** | solana-program 2.2.0 |
+| **ZK Proofs** | Groth16, MiMC7, Poseidon |
+| **Privacy** | Arcium (encrypted compute) |
+| **Compliance** | eIDAS 2.0 (EU 910/2014) |
+| **Container** | Docker |
+| **Orchestration** | Kubernetes, ECS |
+| **IaC** | Terraform |
+| **CI/CD** | GitHub Actions |
+| **Secrets** | HashiCorp Vault |
+| **Monitoring** | Prometheus, Grafana |
+| **Logging** | CloudWatch, ELK |
+
+---
+
 ## Open Source Features (MIT License)
 
 | Feature | Description |

@@ -6,6 +6,85 @@ The RivicQ Crosschain Hub is a Solana-based blockchain protocol that enables cro
 
 ---
 
+## Market Problems We Solve
+
+### DeFi Market Problems
+
+| Problem | Description | Solution |
+|---------|-------------|----------|
+| **Privacy Leakage** | All transactions are transparent, exposing trading strategies | ZK proofs hide sender, recipient, amount |
+| **MEV Extraction** | Validators/front-runners steal value from users | MEV protection with Flashbots |
+| **Cross-chain Friction** | Moving assets between chains is complex and slow | Unified bridge to 7+ chains |
+| **Regulatory Uncertainty** | DeFi lacks compliance for institutional adoption | eIDAS 2.0 qualified signatures |
+| **Smart Contract Risk** | Single point of failure in protocols | Multi-sig vaults, circuit breakers |
+| **Identity Fragmentation** | Each chain requires separate KYC | Universal compliance layer |
+| **Oracle Dependence** | Price manipulation attacks | Integrated proof-of-work verification |
+
+### DAO Market Problems
+
+| Problem | Description | Solution |
+|---------|-------------|----------|
+| **Vote Privacy** | DAO votes are transparent, enabling collusion | Encrypted voting with ZK proofs |
+| **Proposal Sniping** | Last-minute proposal manipulation | Timelock with encryption |
+| **Multisig Centralization** | Small groups control treasury | Threshold signatures with governance |
+| **Identity Verification** | Sybil attacks on governance | eIDAS-compliant identity proofs |
+| **Execution Transparency** | Unclear if proposals are executed as passed | Immutable audit logs |
+| **Member Privacy** | Exposing whale holdings discourages participation | Shielded balance proofs |
+| **Cross-chain Governance** | Single-chain DAOs can't coordinate multi-chain | Unified governance layer |
+
+---
+
+## Tech Stack
+
+### Core Layer
+
+| Component | Technology | Version |
+|-----------|------------|---------|
+| Blockchain | Solana | 2.2.0 |
+| Language | Rust | 1.77+ |
+| SDK | solana-program | 2.2.0 |
+| Serialization | Borsh | 0.10 |
+
+### Privacy Layer
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| ZK Proofs | Groth16 | Zero-knowledge verification |
+| Hash Functions | MiMC7, Poseidon | Efficient ZK-friendly hashing |
+| Encryption | ECIES | Standard encrypted communications |
+| Privacy Compute | Arcium | Encrypted execution environment |
+
+### Compliance Layer
+
+| Component | Technology | Standard |
+|-----------|------------|----------|
+| Digital Signatures | eIDAS | EU 910/2014 |
+| Timestamping | QTS | eIDAS Qualified |
+| Identity | QES | eIDAS High |
+| KYC/AML | Custom | EU AMLD6 |
+
+### Infrastructure Layer
+
+| Component | Technology |
+|-----------|------------|
+| Container | Docker |
+| Orchestration | Kubernetes, ECS |
+| IaC | Terraform |
+| CI/CD | GitHub Actions |
+| Monitoring | Prometheus, Grafana |
+| Logging | CloudWatch, ELK |
+
+### Enterprise Integration
+
+| Component | Technology |
+|-----------|------------|
+| Secrets | HashiCorp Vault |
+| Audit Logs | AWS S3 |
+| Hardware Wallets | Ledger, Trezor |
+| Cloud | AWS, GCP, Azure |
+
+---
+
 ## Open Source Architecture (OSS)
 
 ### Components
@@ -13,7 +92,7 @@ The RivicQ Crosschain Hub is a Solana-based blockchain protocol that enables cro
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Client Applications                       │
-│  (Web Wallet, CLI, SDK)                                     │
+│  (Web Wallet, CLI, SDK, Trading Bots)                      │
 └─────────────────────┬───────────────────────────────────────┘
                       │
                       ▼
@@ -28,12 +107,14 @@ The RivicQ Crosschain Hub is a Solana-based blockchain protocol that enables cro
 │  └─────────────────────────────────────────────────────┘  │
 └─────────────────────┬───────────────────────────────────────┘
                       │
-         ┌────────────┼────────────┐
-         ▼            ▼            ▼
-    ┌─────────┐  ┌─────────┐  ┌─────────┐
-    │Ethereum │  │ BSC/    │  │ Polygon │
-    │ Network │  │Arbitrum │  │Network  │
-    └─────────┘  └─────────┘  └─────────┘
+         ┌───────────┼───────────┬───────────┐
+         ▼           ▼           ▼           ▼
+    ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐
+    │Ethereum │ │ Solana  │ │  BSC    │ │ Polygon │
+    └─────────┘ └─────────┘ └─────────┘ └─────────┘
+         ▲           ▲           ▲           ▲
+         └───────────┴───────────┴───────────┘
+                    Cross-chain
 ```
 
 ### OSS Features

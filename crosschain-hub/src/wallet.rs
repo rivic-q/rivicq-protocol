@@ -1,4 +1,4 @@
-use crate::eidas::{ComplianceData, EidasLevel};
+use crate::eidas::EidasLevel;
 use borsh::{BorshDeserialize, BorshSerialize};
 use solana_program::pubkey::Pubkey;
 
@@ -100,7 +100,6 @@ pub fn validate_wallet_transfer(
 }
 
 pub fn derive_multi_chain_address(master_key: &Pubkey, chain_id: u64, index: u32) -> Pubkey {
-    use solana_sdk::hash::Hash;
     use solana_sdk::pubkey::Pubkey;
 
     let seed = format!("{}{}{}", chain_id, index, master_key);

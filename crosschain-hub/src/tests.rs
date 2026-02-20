@@ -1,10 +1,8 @@
-#![cfg(test)]
-
-mod tests {
+#[cfg(test)]
+mod test_functions {
     use crate::arcium::*;
     use crate::bridge::*;
     use crate::eidas::*;
-    use crate::wallet::*;
     use crate::*;
     use borsh::BorshSerialize;
     use solana_program::pubkey::Pubkey;
@@ -146,9 +144,11 @@ mod tests {
 
     #[test]
     fn test_validate_arcium_transaction() {
-        let mut config = ArciumConfig::default();
-        config.encryption_enabled = true;
-        config.proof_required = true;
+        let config = ArciumConfig {
+            encryption_enabled: true,
+            proof_required: true,
+            ..Default::default()
+        };
 
         let tx_data = ArciumTransactionData {
             encrypted_payload: vec![1, 2, 3, 4],
@@ -165,9 +165,7 @@ mod tests {
 
     #[test]
     fn test_validate_arcium_transaction_no_encryption() {
-        let mut config = ArciumConfig::default();
-        config.encryption_enabled = false;
-        config.proof_required = false;
+        let config = ArciumConfig::default();
 
         let tx_data = ArciumTransactionData {
             encrypted_payload: vec![],

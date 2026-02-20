@@ -2,18 +2,13 @@ use borsh::{BorshDeserialize, BorshSerialize};
 use solana_program::pubkey::Pubkey;
 use std::collections::HashMap;
 
-#[derive(BorshSerialize, BorshDeserialize, Debug, Clone, PartialEq)]
+#[derive(BorshSerialize, BorshDeserialize, Debug, Clone, PartialEq, Default)]
 pub enum EidasLevel {
+    #[default]
     None,
     Basic,
     Substantial,
     High,
-}
-
-impl Default for EidasLevel {
-    fn default() -> Self {
-        Self::None
-    }
 }
 
 #[derive(BorshSerialize, BorshDeserialize, Debug, Clone)]
@@ -112,7 +107,7 @@ pub struct AuditLog {
 }
 
 pub fn validate_certificate(cert: &QualifiedCertificate) -> Result<bool, String> {
-    if cert.qscd != true {
+    if !cert.qscd {
         return Err("Certificate must be from QSCD".to_string());
     }
 

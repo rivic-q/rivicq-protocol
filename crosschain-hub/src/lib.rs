@@ -55,25 +55,13 @@ impl Default for CrossChainConfig {
     }
 }
 
-#[derive(BorshSerialize, BorshDeserialize, Debug, Clone)]
+#[derive(BorshSerialize, BorshDeserialize, Debug, Clone, Default)]
 pub struct CrossChainState {
     pub config: CrossChainConfig,
     pub total_volume: u64,
     pub total_transactions: u64,
     pub registered_wallets: u64,
     pub compliance_records: u64,
-}
-
-impl Default for CrossChainState {
-    fn default() -> Self {
-        Self {
-            config: CrossChainConfig::default(),
-            total_volume: 0,
-            total_transactions: 0,
-            registered_wallets: 0,
-            compliance_records: 0,
-        }
-    }
 }
 
 #[derive(BorshSerialize, BorshDeserialize, Debug, Clone)]
@@ -169,9 +157,13 @@ fn initialize(
         return Err(ProgramError::MissingRequiredSignature);
     }
 
-    let mut state = CrossChainState::default();
-    state.config = config;
-    state.config.admin = *admin.key;
+    let state = CrossChainState {
+        config: CrossChainConfig {
+            admin: *admin.key,
+            ..config
+        },
+        ..Default::default()
+    };
 
     let rent = Rent::get()?;
     let space = state.try_to_vec()?.len();

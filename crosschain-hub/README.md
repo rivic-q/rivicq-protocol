@@ -5,6 +5,9 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/rivic-q/rivicq-protocol/releases/tag/v2.0.0-demo">
+    <img src="https://img.shields.io/badge/Release-v2.0.0--demo-green.svg" alt="Demo Release"/>
+  </a>
   <a href="https://github.com/rivic-q/rivicq-protocol/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License"/>
   </a>
@@ -16,6 +19,9 @@
   </a>
   <img src="https://img.shields.io/badge/Legal-GDPR--Compliant-blueviolet.svg" alt="GDPR"/>
   <img src="https://img.shields.io/badge/Legal-BaFin--Ready-red.svg" alt="BaFin"/>
+  <a href="https://github.com/rivic-q/rivicq-protocol/actions">
+    <img src="https://img.shields.io/badge/CI-Passing-success.svg" alt="CI"/>
+  </a>
 </p>
 
 ---
@@ -74,6 +80,59 @@ const result = await confidential.createConfidentialTransfer(
   senderBalance
 );
 ```
+
+---
+
+## 🚀 Crosschain Hub Demo
+
+### Quick Start
+
+```bash
+# Clone and build
+git clone https://github.com/rivic-q/rivicq-protocol.git
+cd rivicq-protocol/crosschain-hub
+
+# Build the Solana program
+cargo build --release
+
+# The compiled .so file will be at:
+# target/release/libcrosschain_hub.so
+```
+
+### Docker Demo
+
+```bash
+# Pull the demo image
+docker pull ghcr.io/rivicq/crosschain-hub:v2.0.0-demo
+
+# Run locally
+docker run -d -p 8080:8080 ghcr.io/rivicq/crosschain-hub:v2.0.0-demo
+```
+
+### Kubernetes Demo
+
+```bash
+# Deploy to Kubernetes
+helm install crosschain-hub ./helm/crosschain-hub \
+  --namespace rivicq \
+  --set image.tag=v2.0.0-demo
+```
+
+### Features Demo
+
+| Feature | Command | Description |
+|---------|---------|-------------|
+| Initialize | `init` | Initialize crosschain hub |
+| Register Wallet | `register_wallet` | Create new wallet |
+| Cross-Chain Transfer | `initiate_cross_chain` | Transfer tokens |
+| eIDAS Compliance | `verify_compliance` | Verify KYC/AML |
+| Qualified Signature | `create_qes` | Create eIDAS signature |
+
+### Release Information
+
+- **Latest Release:** [v2.0.0-demo](https://github.com/rivic-q/rivicq-protocol/releases/tag/v2.0.0-demo)
+- **Release Date:** February 20, 2026
+- **Status:** Demo ✅
 
 ---
 

@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  # Solana Program Builder
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    image: rivicq/crosschain-hub-builder:${VERSION:-latest}
+    volumes:
+      - .:/build
+      - cargo-cache:/cargo
+    environment:
+      - CARGO_HOME=/cargo
+      - RUSTUP_HOME=/rustup
+    command: tail -f /dev/null
+
+  # Solana Test Validator
+  solana-validator:
+    image: solanalabs/solana:v2.2.0
+    container_name: solana-validator
+    ports:
+      - "8899:8899"
+      - "8900:8900"
+      - "9900:9900"
+    volumes:
+      - solana-data:/solana-data
+    environment:
+      - SOLANA_METRICS_CONFIG=disabled
+      - RUST_LOG=error
+    command: >
+      solana-test-validator
+      --ledger /solana-data/ledger
+      --rpc-port 8899
+      --limit-ledger-size 10000000
+      --bpf-program CrossChainHub1111111111111111111111111111112 /build/target/release/crosschain_hub.so
+
+  # Development environment
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    image: rivicq/crosschain-hub:${VERSION:-latest}
+    volumes:
+      - .:/app
+    environment:
+      - RUST_LOG=debug
+      - SOLANA_NETWORK=localnet
+    depends_on:
+      - solana-validator
+    networks:
+      - rivicq-net
+
+  # Production build (minimal runtime image)
+  production:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    image: rivicq/crosschain-hub:${VERSION:-latest}
+    restart: unless-stopped
+    environment:
+      - RUST_LOG=info
+      - SOLANA_NETWORK=${SOLANA_NETWORK:-mainnet-beta}
+      - RPC_URL=${RPC_URL}
+      - WEBHOOK_URL=${WEBHOOK_URL}
+    networks:
+      - rivicq-net
+    labels:
+      - "com.rivicq.service=crosschain-hub"
+      - "com.rivicq.version=2.0.0"
+
+  # Enterprise version with additional features
+  enterprise:
+    build:
+      context: .
+      dockerfile: Dockerfile.enterprise
+      target: runtime
+    image: rivicq/crosschain-hub-enterprise:${VERSION:-latest}
+    restart: unless-stopped
+    environment:
+      - RUST_LOG=info
+      - SOLANA_NETWORK=${SOLANA_NETWORK:-mainnet-beta}
+      - ENTERPRISE_MODE=true
+      - VAULT_ENABLED=true
+      - KEY_ROTATION_ENABLED=true
+      - AUDIT_LOGGING=true
+    volumes:
+      - enterprise-secrets:/secrets
+      - audit-logs:/var/log/rivicq
+    networks:
+      - rivicq-net
+    labels:
+      - "com.rivicq.service=crosschain-hub-enterprise"
+      - "com.rivicq.tier=enterprise"
+
+volumes:
+  cargo-cache:
+  solana-data:
+  enterprise-secrets:
+  audit-logs:
+
+networks:
+  rivicq-net:
+    driver: bridge
+    name: rivicq-prod-network

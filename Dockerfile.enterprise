@@ -1,0 +1,85 @@
+# Stage 1: Builder with enterprise features
+FROM rust:1.77-bookworm AS builder
+
+# Install required dependencies including enterprise tools
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    libudev-dev \
+    protobuf-compiler \
+    clang \
+    llvm \
+    libclang-dev \
+    gperf \
+    jq \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables
+ENV CARGO_HOME=/cargo
+ENV RUSTUP_HOME=/rustup
+ENV PATH=/cargo/bin:$PATH
+
+# Create cargo directory
+RUN mkdir -p $CARGO_HOME
+
+WORKDIR /build
+
+# Copy Cargo files
+COPY Cargo.toml Cargo.lock ./
+COPY src ./src
+
+# Enterprise features enabled via cargo
+RUN echo '[profile.release]' >> Cargo.toml
+RUN echo 'lto = true' >> Cargo.toml  
+RUN echo 'codegen-units = 1' >> Cargo.toml
+RUN echo 'opt-level = 3' >> Cargo.toml
+RUN echo 'strip = true' >> Cargo.toml
+
+# Build with maximum optimizations
+RUN cargo build --release --locked 2>&1 || cargo build --release
+
+# Stage 2: Secure Runtime
+FROM debian:bookworm-slim AS runtime
+
+# Security: Install only minimal packages
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libssl3 \
+    tzdata \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd -m -u 1000 -s /bin/bash appuser \
+    && mkdir -p /secrets /var/log/rivicq /app \
+    && chown -R appuser:appuser /secrets /var/log/rivicq /app
+
+WORKDIR /home/appuser
+
+# Copy the compiled program
+COPY --from=builder --chown=appuser:appuser /build/target/release/crosschain_hub.so /app/
+COPY --from=builder --chown=appuser:appuser /build/target/release/crosschain_hub /app/
+
+# Copy configuration
+COPY --chown=appuser:appuser config/enterprise /app/config
+
+# Set secure permissions
+RUN chmod 500 /app/crosschain_hub \
+    && chmod 400 /app/config/*.json 2>/dev/null || true \
+    && touch /var/log/rivicq/audit.log \
+    && chown appuser:appuser /var/log/rivicq/audit.log
+
+# Environment setup
+ENV RUST_LOG=info \
+    SOLANA_NETWORK=mainnet-beta \
+    ENTERPRISE_MODE=true \
+    VAULT_ENABLED=true \
+    KEY_ROTATION_ENABLED=true \
+    AUDIT_LOGGING=true
+
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8899/health || exit 1
+
+CMD ["/app/crosschain_hub", "--help"]

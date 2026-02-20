@@ -1,0 +1,19 @@
+apiVersion: v2
+name: crosschain-hub
+description: RivicQ Crosschain Hub - A Solana-based cross-chain protocol with eIDAS compliance
+type: application
+version: 2.0.0
+appVersion: "2.0.0"
+keywords:
+  - rivicq
+  - crosschain
+  - solana
+  - blockchain
+  - privacy
+  - eidas
+maintainers:
+  - name: RivicQ Team
+    email: hello@rivicq.com
+home: https://rivicq.com
+sources:
+  - https://github.com/rivic-q/crosschain-hub

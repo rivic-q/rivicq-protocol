@@ -1,0 +1,37 @@
+name: Crosschain Hub Environments
+
+on:
+  push:
+    branches:
+      - main
+
+environments:
+  staging:
+    protection_rules:
+      - type: required_reviewers
+        reviewers:
+          - team: devops
+    deployment_branch_policy: custom
+    custom_branch_policy_rule_ids:
+      - develop
+
+  production:
+    protection_rules:
+      - type: required_reviewers
+        reviewers:
+          - team: security
+      - type: required_workflow
+      - type: wait_timer
+        minutes: 30
+    deployment_branch_policy: protected
+
+  enterprise:
+    protection_rules:
+      - type: required_reviewers
+        reviewers:
+          - team: security
+          - team: enterprise
+      - type: required_workflow
+      - type: wait_timer
+        minutes: 60
+    deployment_branch_policy: protected

@@ -1,0 +1,77 @@
+# Enterprise values for crosschain-hub
+replicaCount: 5
+
+image:
+  repository: ghcr.io/rivicq/crosschain-hub-enterprise
+  tag: "enterprise-latest"
+  pullPolicy: Always
+
+resources:
+  limits:
+    cpu: 4000m
+    memory: 8Gi
+  requests:
+    cpu: 1000m
+    memory: 2Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 5
+  maxReplicas: 20
+  targetCPUUtilizationPercentage: 60
+  targetMemoryUtilizationPercentage: 70
+
+enterprise:
+  enabled: true
+  vault:
+    enabled: true
+    address: "https://vault.rivicq.com"
+    role: "crosschain-hub"
+  auditLogging:
+    enabled: true
+    backend: "s3"
+  keyRotation:
+    enabled: true
+    interval: "90d"
+  rateLimiting:
+    enabled: true
+    requestsPerMinute: 10000
+  multiSig:
+    enabled: true
+    requiredSignatures: 2
+    totalSigners: 3
+
+networkPolicy:
+  enabled: true
+
+persistence:
+  enabled: true
+  storageClass: "gp3"
+  size: 50Gi
+
+logging:
+  level: debug
+  format: json
+  retention: 90
+
+tls:
+  enabled: true
+  secretName: rivicq-enterprise-tls
+
+service:
+  type: LoadBalancer
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: enterprise.rivicq.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: rivicq-enterprise-tls
+      hosts:
+        - enterprise.rivicq.com
